@@ -9,14 +9,48 @@ const defaultCartState = {
 
 const cartReducer = (prevCart, action) => {
   if (action.type === 'ADD') {
-    // later check if already exist
-    const updatedItems = [...prevCart.items, action.item];
     const updatedTotalPrice = prevCart.totalPrice + action.item.price * action.item.amount;
+    //  check if already exist
+    const existingCartItemIndex = prevCart.items.findIndex(
+      (item) => item.id === action.item.id
+    );
+    const existingCartItem = prevCart.items[existingCartItemIndex];
+
+    let updatedItems;
+
+    if (existingCartItem) {
+      const updatedItem = {
+        ...existingCartItem,
+        amount: existingCartItem.amount + action.item.amount,
+      };
+      updatedItems = [...prevCart.items];
+      updatedItems[existingCartItemIndex] = updatedItem;
+    } else {
+      updatedItems = [...prevCart.items, action.item];
+    }
 
     return { items: updatedItems, totalPrice: updatedTotalPrice };
   }
 
   if (action.type === 'REMOVE') {
+    const existingCartItemIndex = prevCart.items.findIndex((item) => item.id === action.id);
+    const existingCartItem = prevCart.items[existingCartItemIndex];
+
+    const updatedTotalPrice = prevCart.totalPrice - existingCartItem.price;
+
+    let updatedItems;
+
+    if (existingCartItem.amount === 1) {
+      updatedItems = prevCart.items.filter((item) => item.id !== action.id);
+    } else {
+      updatedItems = [...prevCart.items];
+      updatedItems[existingCartItemIndex] = {
+        ...existingCartItem,
+        amount: existingCartItem.amount - 1,
+      };
+    }
+
+    return { items: updatedItems, totalPrice: updatedTotalPrice };
   }
 
   return defaultCartState;
