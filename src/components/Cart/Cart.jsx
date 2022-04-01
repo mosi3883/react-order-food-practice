@@ -19,7 +19,7 @@ const Cart = (props) => {
         <button className={classes['button--alt']} onClick={props.onHideCart}>
           Close
         </button>
-        <button className={classes.button} onClick={console.log('ordering ...')}>
+        <button className={classes.button} onClick={() => console.log('ordering ...')}>
           Order
         </button>
       </div>
