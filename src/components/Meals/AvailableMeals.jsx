@@ -6,14 +6,21 @@ import MealItem from './MealItem/MealItem';
 const AvailableMeals = () => {
   const [meals, setMeals] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [httpError, setHttpError] = useState(null);
 
   useEffect(() => {
     const fetchMeals = async () => {
       try {
+        setHttpError(null);
         const response = await fetch('http://localhost:8500/foods');
+        if (!response.ok) {
+          throw new Error(`Something went wrong (${response.statusText})`);
+        }
+
         const data = await response.json();
         setMeals(data);
       } catch (err) {
+        setHttpError(err.message);
       } finally {
         setIsLoading(false);
       }
@@ -25,6 +32,14 @@ const AvailableMeals = () => {
     return (
       <section className={classes['meals-loading']}>
         <p>Loading ...</p>
+      </section>
+    );
+  }
+
+  if (httpError) {
+    return (
+      <section className={classes['meals-error']}>
+        <p>{httpError}</p>
       </section>
     );
   }
