@@ -5,15 +5,30 @@ import MealItem from './MealItem/MealItem';
 
 const AvailableMeals = () => {
   const [meals, setMeals] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchMeals = async () => {
-      const response = await fetch('http://localhost:8500/foods');
-      const data = await response.json();
-      setMeals(data);
+      try {
+        const response = await fetch('http://localhost:8500/foods');
+        const data = await response.json();
+        setMeals(data);
+      } catch (err) {
+      } finally {
+        setIsLoading(false);
+      }
     };
     fetchMeals();
   }, []);
+
+  if (isLoading) {
+    return (
+      <section className={classes['meals-loading']}>
+        <p>Loading ...</p>
+      </section>
+    );
+  }
+
   const mealsList = meals.map((meal) => (
     <MealItem
       key={meal.id}
